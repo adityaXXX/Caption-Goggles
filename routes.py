@@ -1,4 +1,4 @@
-# from app import app
+import keyboard
 from flask import Flask, render_template, Response
 import cv2
 from captionbot import CaptionBot
@@ -21,15 +21,19 @@ def gen():
                 continue
             yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + bytearray(encodedImage) + b'\r\n')
-            key = cv2.waitKey(1)
-            if key == ord('a'):
-                print("Generating Caption...")
-                cv2.imwrite('image.jpg',f)
-                caption = c.file_caption('/home/aditya/Hack-a-bit2019/' + 'image.jpg')
-                # caption = c.file_caption("C:/Users/Bharat/Desktop/Caption-Goggles/image.jpg")
-                print(caption)
-            elif key == 27:
-                break
+            while True:
+                try:
+                    if keyboard.is_pressed('a'):
+                        # if key == ord('a'):
+                        print("Generating Caption...")
+                        cv2.imwrite('image.jpg',f)
+                        caption = c.file_caption('/home/aditya/Hack-a-bit2019/' + 'image.jpg')
+                        # caption = c.file_caption("C:/Users/Bharat/Desktop/Caption-Goggles/image.jpg")
+                        print(caption)
+                    else:
+                        pass
+                except:
+                    break
         else:
             continue
     cv2.destroyAllWindows()
