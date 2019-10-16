@@ -16,8 +16,11 @@ def gen():
     while True:
         ret ,frame =  cap.read()
         if ret == True:
+            flag, encodedImage = cv2.imencode(".jpg" , frame)
+            if not flag:
+                continue
             yield (b'--frame\r\n'
-               b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+               b'Content-Type: image/jpeg\r\n\r\n' + bytearray(encodedImage) + b'\r\n')
             key = cv2.waitKey(1)
             if key == ord('a'):
                 print("Generating Caption...")
