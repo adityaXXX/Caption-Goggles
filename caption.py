@@ -11,8 +11,7 @@ while True:
         if key == ord('a'):
             print("Generating Caption...")
             cv2.imwrite('image.jpg',f)
-            # caption = c.file_caption('/home/aditya/Hack-a-bit2019/' + 'image.jpg')
-            caption = c.file_caption("C:/Users/Bharat/Desktop/Caption-Goggles/image.jpg")
+            caption = c.file_caption('/home/aditya/Hack-a-bit2019/' + 'image.jpg')
             print(caption)
         elif key == 27:
             break
