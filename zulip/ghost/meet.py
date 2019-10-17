@@ -1,4 +1,5 @@
 import meetup.api
+from datetime import datetime, timedelta
 key = '39742216187936612d1055305074549'
 
 
@@ -8,6 +9,12 @@ def grouping(name):
     name = name.replace(" ","-")
     group_info = client.GetGroup({'urlname': name})
 
+    timer = group_info.next_event['time']
+    base = datetime(1970,1,1)
+    delta = timedelta(0,0,0,timer)
+    tot = delta + base
+    msg = tot.strftime("%Y-%m-%d %H:%M")
+
     result = {
         'Name': group_info.name,
         'Organizer': group_info.organizer['name'],
@@ -15,7 +22,7 @@ def grouping(name):
         'Upcoming Event': {
             'Event Name': group_info.next_event['name'],
             'RSVP': group_info.next_event['yes_rsvp_count'],
-            'Time': group_info.next_event['time']
+            'Time': msg
         },
         'Link': group_info.link
     }
