@@ -1,4 +1,3 @@
-from pynput import keyboard
 from flask import Flask, render_template, Response
 import cv2
 from captionbot import CaptionBot
@@ -14,20 +13,20 @@ def index():
     user = {'username':"Deepak"}
     return render_template('index.html' , user= user)
 
-def on_press(key):
-    try:
-        if key.char == 'a':
-            print(key.char == 'a')
-            print("Generating Caption...")
-            cv2.imwrite('image.jpg',f)
-            # caption = c.file_caption('/home/aditya/Hack-a-bit2019/' + 'image.jpg')
-            print("lol")
-            caption = c.file_caption("C:/Users/Bharat/Desktop/Caption-Goggles/image.jpg")
-            print("yeah!!")
-            print(caption)
-            print("hahah")
-    except:
-        pass
+# def on_press(key):
+#     try:
+#         if key.char == 'a':
+#             print(key.char == 'a')
+#             print("Generating Caption...")
+#             cv2.imwrite('image.jpg',f)
+#             # caption = c.file_caption('/home/aditya/Hack-a-bit2019/' + 'image.jpg')
+#             print("lol")
+#             caption = c.file_caption("C:/Users/Bharat/Desktop/Caption-Goggles/image.jpg")
+#             print("yeah!!")
+#             print(caption)
+#             print("hahah")
+#     except:
+#         pass
 
 def gen():
     cap = cv2.VideoCapture(0)
