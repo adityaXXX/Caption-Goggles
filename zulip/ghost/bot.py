@@ -12,6 +12,7 @@ from meet import grouping
 from pnr import getpnr
 from jobs import getjobs
 from currency import fetch_currency_exchange_rate
+from weather import get_weather
 
 BOT_MAIL = "ghost-bot@zulipchat.com"
 
@@ -85,23 +86,43 @@ class Ghost(object):
                     message = getjobs()
                 except:
                     message = "Connection Error"
-                    
+
             elif content[1].lower() == "currency":
                 if len(content) == 3 and content[2].lower() != "":
-                    # Query format: Neo currency USD
+                   
                     currency = fetch_currency_exchange_rate("", content[2].upper())
                     message += "**Showing all currency conversions for 1 {}:**\n".format(content[2].upper())
                     for curr in currency['rates']:
                         message += "1 {} = ".format(content[2].upper()) + "{}".format(format(currency['rates'][curr], '.2f')) + " {}\n".format(curr)
                     message += "Last Updated: *{}*".format(currency['date'])
                 elif len(content) == 5 and content[2].lower() != "" and content[4].lower() != "":
-                    # Query format: Neo currency INR to USD
+                   
                     currency = fetch_currency_exchange_rate(content[2].upper(), content[4].upper())
                     message += "1 {} = ".format(content[4].upper()) + "{}".format(format(currency['rates'][content[2].upper()], '.2f')) + " {}\n".format(content[4].upper())
                     message += "Last Updated: *{}*".format(currency['date'])
                 else:
                     message = "Please ask the query in correct format."
-
+            
+            elif content[1].lower() == "weather":
+                try:
+                    if len(content) > 2 and content[2].lower() != "":
+                        
+                        weather = get_weather(content[2].lower())
+                        if str(weather['cod']) != "404":
+                            message += "[](http://openweathermap.org/img/w/{}.png)".format(weather['weather'][0]['icon'])
+                            message += '\n'
+                            message += "**Weather report for {}**\n".format(content[2].lower())
+                            message += "Temperature: **{}**\n".format(str(weather['main']['temp']) + "° C")
+                            message += "Pressure: **{}**\n".format(str(weather['main']['pressure']) + " hPa")
+                            message += "Humidity: **{}**\n".format(str(weather['main']['humidity']) + "%")
+                            message += "Wind Speed: **{}**".format(str(weather['wind']['speed']) + " $$m/s^2$$")
+                        else:
+                            message = "City not found!\nabc"
+                    else:
+                        message = "Please add a location name."
+                except:
+                    message = "Something went wrong"
+                
             else:
                 message += "Show top 10 news : **Ghost news**\n"
                 message += "Show MeetUp group details and next event status"
