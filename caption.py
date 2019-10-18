@@ -1,21 +1,60 @@
 import cv2
 from captionbot import CaptionBot
+import numpy as np
+import urllib.request as urllib2
 
+url = 'http://192.168.10.1/media/?action=stream'
+username = 'abhi'
+password = '1234'
+p = urllib2.HTTPPasswordMgrWithDefaultRealm()
+
+p.add_password(None, url, username, password)
+
+handler = urllib2.HTTPBasicAuthHandler(p)
+opener = urllib2.build_opener(handler)
+urllib2.install_opener(opener)
+
+stream = urllib2.urlopen(url)
+byte = bytes()
 c = CaptionBot()
-cap = cv2.VideoCapture(0)
+
 while True:
-    r, f = cap.read()
-    if r==True:
-        cv2.imshow("Stream", f)
-        key = cv2.waitKey(1)
-        if key == ord('a'):
-            print("Generating Caption...")
-            cv2.imwrite('image.jpg',f)
+	byte += stream.read(1024)
+    a = byte.find(b'\xff\xd8')
+    b = byte.find(b'\xff\xd9')
+    if a != -1 and b != -1:
+        jpg = byte[a:b+2]
+        byte = byte[b+2:]
+        img = cv2.imdecode(np.fromstring(jpg, dtype=np.uint8), cv2.IMREAD_COLOR)
+        img = cv2.resize(img,(640,480))
+        cv2.imshow('Stream', img)
+        k = cv2.waitKey(1)
+        if k == ord('a'):
+        	print("Generating Caption...")
+            cv2.imwrite('image.jpg',img)
             caption = c.file_caption('/home/aditya/Hack-a-bit2019/' + 'image.jpg')
             print(caption)
         elif key == 27:
             break
-    else :
-        continue
+        else:
+     		continue
 cv2.destroyAllWindows()
 cap.release()
+
+
+
+#     r, f = stream.read()
+#     if r==True:
+#         cv2.imshow("Stream", f)
+#         key = cv2.waitKey(1)
+#         if key == ord('a'):
+#             print("Generating Caption...")
+#             cv2.imwrite('image.jpg',f)
+#             caption = c.file_caption('/home/aditya/Hack-a-bit2019/' + 'image.jpg')
+#             print(caption)
+#         elif key == 27:
+#             break
+#     else :
+#         continue
+# cv2.destroyAllWindows()
+# cap.release()
