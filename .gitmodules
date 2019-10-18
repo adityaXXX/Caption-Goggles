@@ -1,0 +1,3 @@
+[submodule "stephanie-va"]
+	path = stephanie-va
+	url = https://github.com/SlapBot/stephanie-va.git
