@@ -13,6 +13,7 @@ from pnr import getpnr
 from jobs import getjobs
 from currency import fetch_currency_exchange_rate
 from weather import get_weather
+from translate import translate_message
 
 BOT_MAIL = "ghost-bot@zulipchat.com"
 
@@ -80,6 +81,15 @@ class Ghost(object):
                     message = getpnr(num)
                 except:
                     message = "Connection Error"
+            
+            elif content[1].lower() == "translate":
+                try:
+                    message = content[2:]
+                    message = " ".join(message)
+                    
+                    message = translate_message(message)
+                except:
+                    message = "Error in format"
 
             elif content[1].lower() == "jobs":
                 try:
@@ -109,9 +119,8 @@ class Ghost(object):
                         
                         weather = get_weather(content[2].lower())
                         if str(weather['cod']) != "404":
-                            message += "[](http://openweathermap.org/img/w/{}.png)".format(weather['weather'][0]['icon'])
-                            message += '\n'
                             message += "**Weather report for {}**\n".format(content[2].lower())
+                            message += "Climate: **{}**\n".format(str(weather['weather'][0]['description']))
                             message += "Temperature: **{}**\n".format(str(weather['main']['temp']) + "° C")
                             message += "Pressure: **{}**\n".format(str(weather['main']['pressure']) + " hPa")
                             message += "Humidity: **{}**\n".format(str(weather['main']['humidity']) + "%")
@@ -142,5 +151,5 @@ if __name__ == "__main__":
     try:
         main()
     except KeyboardInterrupt:
-        print("Adios")
+        print("Adios fellas")
         sys.exit(0)
