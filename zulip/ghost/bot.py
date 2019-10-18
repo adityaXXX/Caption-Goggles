@@ -9,12 +9,15 @@ import math
 import threading
 from topnews import News
 from meet import grouping
+from pnr import getpnr
+from jobs import getjobs
+from currency import fetch_currency_exchange_rate
 
 BOT_MAIL = "ghost-bot@zulipchat.com"
 
 class Ghost(object):
     """
-    Description of the bot
+    We are Ghosts .. we are everywhere
     """
 
     def __init__(self):
@@ -40,7 +43,7 @@ class Ghost(object):
         #    return
         if content[0].lower() == "@**ghost**":
             message = ""
-            print("yes")
+            #print("yes")
             if content[1].lower() == "hello" or content[1].lower() == "hi":
                 message = "Hola"
             elif content[1].lower() == "news":
@@ -55,20 +58,50 @@ class Ghost(object):
                     message = "No news as of now ... try something like football"
             elif content[1].lower() == "meetup":
                 name = ""
-                for i in range(2,len(content)):
+                for i in range(2,len(content)-1):
                     name += content[i]
+                    name += " "
+                name += content[len(content)-1]
+                #print(name)
                 
+                dicti = grouping(name)
+                message += "Name: " + dicti["Name"] + '\n'
+                message += "Organizer: " + dicti["Organizer"] + '\n'
+                message += "City: " + dicti["City"] + '\n'
+                message += "Next Event: " + dicti["Upcoming Event"]["Event Name"] + '\n'
+                message += "RSVP: " + str(dicti["Upcoming Event"]["RSVP"]) + '\n'
+                message += "Time: " + dicti["Upcoming Event"]["Time"] + '\n'
+                message += "Link: " + dicti["Link"] + '\n'
+
+            elif content[1].lower() == "pnr":
+                num = int(content[2])
                 try:
-                    dicti = grouping(name)
-                    message += "Name: " + dicti["Name"] + '\n'
-                    message += "Organizer: " + dicti["Organizer"] + '\n'
-                    message += "City: " + dicti["City"] + '\n'
-                    message += "Next Event: " + dicti["Upcoming Event"]["Event Name"] + '\n'
-                    message += "RSVP: " + dicti["Upcoming Event"]["RSVP"] + '\n'
-                    message += "Time: " + dicti["Upcoming Event"]["Time"] + '\n'
-                    message += "Link: " + dicti["Upcoming Event"]["Link"] + '\n'
+                    message = getpnr(num)
                 except:
-                    message = "Invalid Group Name"
+                    message = "Connection Error"
+
+            elif content[1].lower() == "jobs":
+                try:
+                    message = getjobs()
+                except:
+                    message = "Connection Error"
+                    
+            elif content[1].lower() == "currency":
+                if len(content) == 3 and content[2].lower() != "":
+                    # Query format: Neo currency USD
+                    currency = fetch_currency_exchange_rate("", content[2].upper())
+                    message += "**Showing all currency conversions for 1 {}:**\n".format(content[2].upper())
+                    for curr in currency['rates']:
+                        message += "1 {} = ".format(content[2].upper()) + "{}".format(format(currency['rates'][curr], '.2f')) + " {}\n".format(curr)
+                    message += "Last Updated: *{}*".format(currency['date'])
+                elif len(content) == 5 and content[2].lower() != "" and content[4].lower() != "":
+                    # Query format: Neo currency INR to USD
+                    currency = fetch_currency_exchange_rate(content[2].upper(), content[4].upper())
+                    message += "1 {} = ".format(content[4].upper()) + "{}".format(format(currency['rates'][content[2].upper()], '.2f')) + " {}\n".format(content[4].upper())
+                    message += "Last Updated: *{}*".format(currency['date'])
+                else:
+                    message = "Please ask the query in correct format."
+
             else:
                 message += "Show top 10 news : **Ghost news**\n"
                 message += "Show MeetUp group details and next event status"
