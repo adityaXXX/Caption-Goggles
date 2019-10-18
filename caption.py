@@ -29,7 +29,7 @@ def run_detection(image, interpreter):
 
     return out_scores, out_boxes, out_classes
 
-def real_time_object_detection(sess, colors):
+def real_time_object_detection(interpreter, colors):
     camera = cv2.VideoCapture(0)
 
     while camera.isOpened():

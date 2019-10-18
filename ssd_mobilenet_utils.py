@@ -21,7 +21,7 @@ def generate_colors(class_names):
     random.seed(None)  # Reset seed to default.
     return colors
 
-def preprocess_image(image, model_image_size=(300,300)):    
+def preprocess_image(image, model_image_size=(300,300)):
     image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
     #image = cv2.resize(image, tuple(reversed(model_image_size)), interpolation=cv2.INTER_AREA)
     image = np.array(image, dtype='float32')
@@ -83,7 +83,11 @@ def draw_boxes(image, out_scores, out_boxes, out_classes, class_names, colors):
         bottom = min(h, np.floor(bottom + 0.5).astype('int32'))
         right = min(w, np.floor(right + 0.5).astype('int32'))
         print(label, (left, top), (right, bottom))
-                
+
+        area = abs(left-right)*abs(top-bottom)
+        factor = area/(640*480)
+        if factor > 0.5:
+            print("{} is in close proximity".format(predicted_class))        
         # colors: RGB, opencv: BGR
         cv2.rectangle(image, (left, top), (right, bottom), tuple(reversed(colors[c])), 6)
 
@@ -97,6 +101,5 @@ def draw_boxes(image, out_scores, out_boxes, out_classes, class_names, colors):
         cv2.rectangle(image, (label_rect_left, label_rect_top), (label_rect_right, label_rect_bottom), tuple(reversed(colors[c])), -1)
 
         cv2.putText(image, label, (left, int(top - 4)), font_face, font_scale, (0, 0, 0), font_thickness, cv2.LINE_AA)
-        
-    return image
 
+    return image
