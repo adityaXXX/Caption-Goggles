@@ -13,6 +13,7 @@ from pnr import getpnr
 from jobs import getjobs
 from currency import fetch_currency_exchange_rate
 from weather import get_weather
+from joke import lame_jokes
 from translate import translate_message
 
 BOT_MAIL = "ghost-bot@zulipchat.com"
@@ -35,14 +36,13 @@ class Ghost(object):
     def process(self, msg):
         message_id = msg["id"]
         content  = msg["content"].split()
-        sender_email = msg["sender_email"]
+        sendmail = msg["sender_email"]
         
         stream_name = msg["display_recipient"]
         
-        #print(content)
-        #print(content[0],content[1])
-        #if sender_email == BOT_MAIL:
-        #    return
+        
+        if sendmail == BOT_MAIL:
+            return
         if content[0].lower() == "@**ghost**":
             message = ""
             #print("yes")
@@ -58,22 +58,22 @@ class Ghost(object):
                         message += '\n\n'
                 except:
                     message = "No news as of now ... try something like football"
+
             elif content[1].lower() == "meetup":
-                name = ""
-                for i in range(2,len(content)-1):
-                    name += content[i]
-                    name += " "
-                name += content[len(content)-1]
+                name = content[2:]
                 #print(name)
+                try:
+                    dicti = grouping(name)
+                    message += "Name: " + dicti["Name"] + '\n'
+                    message += "Organizer: " + dicti["Organizer"] + '\n'
+                    message += "City: " + dicti["City"] + '\n'
+                    message += "Next Event: " + dicti["Upcoming Event"]["Event Name"] + '\n'
+                    message += "RSVP: " + str(dicti["Upcoming Event"]["RSVP"]) + '\n'
+                    message += "Time: " + dicti["Upcoming Event"]["Time"] + '\n'
+                    message += "Link: " + dicti["Link"] + '\n'
+                except:
+                    message = "Try a valid group name :)"
                 
-                dicti = grouping(name)
-                message += "Name: " + dicti["Name"] + '\n'
-                message += "Organizer: " + dicti["Organizer"] + '\n'
-                message += "City: " + dicti["City"] + '\n'
-                message += "Next Event: " + dicti["Upcoming Event"]["Event Name"] + '\n'
-                message += "RSVP: " + str(dicti["Upcoming Event"]["RSVP"]) + '\n'
-                message += "Time: " + dicti["Upcoming Event"]["Time"] + '\n'
-                message += "Link: " + dicti["Link"] + '\n'
 
             elif content[1].lower() == "pnr":
                 num = int(content[2])
@@ -86,7 +86,6 @@ class Ghost(object):
                 try:
                     message = content[2:]
                     message = " ".join(message)
-                    
                     message = translate_message(message)
                 except:
                     message = "Error in format"
@@ -112,14 +111,20 @@ class Ghost(object):
                     message += "Last Updated: *{}*".format(currency['date'])
                 else:
                     message = "Please ask the query in correct format."
-            
+
+            elif content[1].lower() == "joke":
+                try:
+                    message = lame_jokes()
+                except:
+                    message = "Not that lame though .. try something else"
+
             elif content[1].lower() == "weather":
                 try:
                     if len(content) > 2 and content[2].lower() != "":
                         
                         weather = get_weather(content[2].lower())
                         if str(weather['cod']) != "404":
-                            message += "**Weather report for {}**\n".format(content[2].lower())
+                            message += "**Weather status of {}**\n".format(content[2].lower())
                             message += "Climate: **{}**\n".format(str(weather['weather'][0]['description']))
                             message += "Temperature: **{}**\n".format(str(weather['main']['temp']) + "° C")
                             message += "Pressure: **{}**\n".format(str(weather['main']['pressure']) + " hPa")
