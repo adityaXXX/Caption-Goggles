@@ -6,6 +6,6 @@ def lame_jokes():
     req = res.json()
     setup = req['setup']
     pl = req['punchline']
-    message = setup + '\n' + "**Punchline: **" + pl
+    message = "**Joke: **" + setup + '\n' + "**Punchline: **" + pl
 
     return message
