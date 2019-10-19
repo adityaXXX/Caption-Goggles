@@ -3,9 +3,9 @@ from captionbot import CaptionBot
 import numpy as np
 import urllib.request as urllib2
 
-url = 'http://192.168.10.1/media/?action=stream'
-username = 'abhi'
-password = '1234'
+url = 'http://10.42.0.244/media/?action=stream'
+username = 'admin'
+password = ''
 p = urllib2.HTTPPasswordMgrWithDefaultRealm()
 
 p.add_password(None, url, username, password)
@@ -19,27 +19,26 @@ byte = bytes()
 c = CaptionBot()
 
 while True:
-	byte += stream.read(1024)
-    a = byte.find(b'\xff\xd8')
-    b = byte.find(b'\xff\xd9')
-    if a != -1 and b != -1:
-        jpg = byte[a:b+2]
-        byte = byte[b+2:]
-        img = cv2.imdecode(np.fromstring(jpg, dtype=np.uint8), cv2.IMREAD_COLOR)
-        img = cv2.resize(img,(640,480))
-        cv2.imshow('Stream', img)
-        k = cv2.waitKey(1)
-        if k == ord('a'):
-        	print("Generating Caption...")
-            cv2.imwrite('image.jpg',img)
-            caption = c.file_caption('/home/aditya/Hack-a-bit2019/' + 'image.jpg')
-            print(caption)
-        elif key == 27:
-            break
-        else:
-     		continue
+	byte += stream.read(32768)
+	a = byte.find(b'\xff\xd8')
+	b = byte.find(b'\xff\xd9')
+	if a != -1 and b != -1:
+		jpg = byte[a:b+2]
+		byte = byte[b+2:]
+		img = cv2.imdecode(np.fromstring(jpg, dtype=np.uint8), cv2.IMREAD_COLOR)
+		img = cv2.resize(img,(640,480))
+		cv2.imshow('Stream', img)
+		key = cv2.waitKey(1)
+		if key == ord('a'):
+			print("Generating Caption...")
+			cv2.imwrite('image.jpg',img)
+			caption = c.file_caption('/home/aditya/Hack-a-bit2019/' + 'image.jpg')
+			print(caption)
+		elif key == 27:
+			break
+		else:
+			continue
 cv2.destroyAllWindows()
-cap.release()
 
 
 
