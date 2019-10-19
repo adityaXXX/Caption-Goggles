@@ -8,17 +8,12 @@ import numpy as np
 c = CaptionBot()
 cap = cv2.VideoCapture(0)
 
-library_path = 'E:/Hack-a-bit_2019/porcupine/lib/windows/amd64/libpv_porcupine.dll' 
-model_file_path = 'E:/Hack-a-bit_2019/porcupine/lib/common/porcupine_params.pv'
-keyword_file_path = ['alexa_windows.ppn','describe.ppn','hey pico_windows.ppn','blueberry_windows.ppn',
-						'bumblebee_windows.ppn','grasshopper_windows.ppn','picovoice_windows.ppn','porcupine_windows.ppn',
-						'terminator_windows.ppn']
-sensitivity = [0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5]
+library_path = 'F:/Caption-Goggles/porcupine/lib/windows/amd64/libpv_porcupine.dll' 
+model_file_path = 'F:/Caption-Goggles/porcupine/lib/common/porcupine_params.pv'
+keyword_file_path = ['alexa_windows.ppn','hey pico_windows.ppn','porcupine_windows.ppn','terminator_windows.ppn']
+sensitivity = [0.5,0.5,0.5,0.5]
 
-handle = Porcupine(library_path, 
-				   model_file_path, 
-	               keyword_file_paths=keyword_file_path, 
-	               sensitivities=sensitivity)
+handle = Porcupine(library_path, model_file_path, keyword_file_paths=keyword_file_path, sensitivities=sensitivity)
 
 def get_next_audio_frame():
     pa = pyaudio.PyAudio()
@@ -26,7 +21,8 @@ def get_next_audio_frame():
     					   channels=1,
     					   format=pyaudio.paInt16,
     					   input=True,
-    					   frames_per_buffer=handle.frame_length)
+    					   frames_per_buffer=handle.frame_length,
+    					   input_device_index=1)
     pcm = audio_stream.read(handle.frame_length)
     pcm = struct.unpack_from("h" * handle.frame_length, pcm)
     return pcm
@@ -39,7 +35,7 @@ while r:
 		break
 	pcm = get_next_audio_frame()
 	keyword_index = handle.process(pcm)
-	if keyword_index==2:
+	if keyword_index==1:
 		print(keyword_file_path[keyword_index])
 		print("Generating Caption...")
 		cv2.imwrite('image.jpg',f)
