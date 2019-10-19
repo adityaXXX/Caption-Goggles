@@ -1,3 +1,6 @@
 [submodule "stephanie-va"]
 	path = stephanie-va
 	url = https://github.com/SlapBot/stephanie-va.git
+[submodule "porcupine"]
+	path = porcupine
+	url = https://github.com/Picovoice/porcupine.git
