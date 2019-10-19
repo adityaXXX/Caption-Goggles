@@ -82,12 +82,12 @@ def draw_boxes(image, out_scores, out_boxes, out_classes, class_names, colors):
         left = max(0, np.floor(left + 0.5).astype('int32'))
         bottom = min(h, np.floor(bottom + 0.5).astype('int32'))
         right = min(w, np.floor(right + 0.5).astype('int32'))
-        print(label, (left, top), (right, bottom))
+        # print(label, (left, top), (right, bottom))
 
         area = abs(left-right)*abs(top-bottom)
         factor = area/(640*480)
         if factor > 0.5:
-            print("{} is in close proximity".format(predicted_class))        
+            print("{} is in close proximity".format(predicted_class))
         # colors: RGB, opencv: BGR
         cv2.rectangle(image, (left, top), (right, bottom), tuple(reversed(colors[c])), 6)
 
